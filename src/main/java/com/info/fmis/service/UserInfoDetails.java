@@ -3,9 +3,7 @@ package com.info.fmis.service;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.info.fmis.model.UserInfo;
-
+import com.info.fmis.model.User;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -17,8 +15,8 @@ public class UserInfoDetails implements UserDetails {
 	private String password;
 	private List<GrantedAuthority> authorities;
 
-	public UserInfoDetails(UserInfo userInfo) {
-		name = userInfo.getName();
+	public UserInfoDetails(User userInfo) {
+		name = userInfo.getUsername();
 		password = userInfo.getPassword();
 		authorities = Arrays.stream(userInfo.getRoles().split(","))
 				.map(SimpleGrantedAuthority::new)

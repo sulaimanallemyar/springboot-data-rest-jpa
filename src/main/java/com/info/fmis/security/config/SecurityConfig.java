@@ -3,6 +3,7 @@ package com.info.fmis.security.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,8 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.info.fmis.service.UserInfoService;
+import com.info.fmis.service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -28,10 +28,9 @@ public class SecurityConfig {
 	@Autowired
 	private JwtAuthFilter authFilter;
 
-	// User Creation
 	@Bean
 	public UserDetailsService userDetailsService() {
-		return new UserInfoService();
+		return new UserService();
 	}
 
 	// Configuring HttpSecurity
