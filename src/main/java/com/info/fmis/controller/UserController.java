@@ -1,13 +1,16 @@
 package com.info.fmis.controller;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
-
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
-import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,15 +18,15 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import com.info.fmis.dto.CustomerDTO;
+import org.springframework.http.MediaType;
 import com.info.fmis.dto.UserDTO;
 import com.info.fmis.model.AuthRequest;
 import com.info.fmis.model.User;
 import com.info.fmis.service.JwtService;
 import com.info.fmis.service.UserService;
+
+import net.minidev.json.JSONArray;
 
 @RestController
 @RequestMapping("/auth")
@@ -80,16 +83,33 @@ public class UserController {
 	}
 
 	@PostMapping("/generateToken")
-	public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+	public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+		
+        Authentication authentication = null;
 
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        try {
+    		authentication = authenticationManager.authenticate(
+    				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
-		if (authentication.isAuthenticated()) {
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			return jwtService.generateToken(authentication);
-		} else {
-			throw new UsernameNotFoundException("invalid user request !");
-		}
+			return ResponseEntity.ok().body(jwtService.generateToken(authentication));
+        } catch (BadCredentialsException e) {
+            return BadCredentialsException("Invalid username or password");
+        }
+	}
+
+	private ResponseEntity<String> BadCredentialsException(String message) {
+		
+        JSONObject response = new JSONObject();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        
+        response.put("data", new JSONArray());
+        response.put("status", false);
+        response.put("error", message);
+        response.put("status_code", 400);
+        response.put("timestamp", Instant.now());
+        
+        return new ResponseEntity<>(response.toString(), httpHeaders, HttpStatus.BAD_REQUEST);
 	}
 }
