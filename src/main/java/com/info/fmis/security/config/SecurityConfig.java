@@ -3,7 +3,6 @@ package com.info.fmis.security.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -38,15 +37,12 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf().disable()
 				.authorizeHttpRequests()
-				.antMatchers(HttpMethod.GET, "/auth/welcome").permitAll() 
-				.antMatchers(HttpMethod.POST, "/auth/generateToken").permitAll() 
-				.antMatchers(HttpMethod.POST, "/auth/addNewUser").permitAll() 
+				.antMatchers(HttpMethod.GET, "/api/welcome").permitAll() 
+				.antMatchers(HttpMethod.POST, "/api/signin").permitAll() 
+				.antMatchers(HttpMethod.POST, "/api/signup").permitAll() 
 				.and()
 				.authorizeHttpRequests()
-					.antMatchers("/auth/user/**").authenticated()
-				.and()
-				.authorizeHttpRequests()
-					.antMatchers("/auth/admin/**").authenticated()
+					.antMatchers("/api/**").authenticated()
 				.and()
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -74,6 +70,4 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-
-
 }

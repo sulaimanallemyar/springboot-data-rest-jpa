@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ import com.info.fmis.service.CustomerService;
 @RequestMapping("/api/customer")
 public class CustomerController {
 
-	private Logger LOGGER = Logger.getLogger(CustomerController.class.getName());
+	private Logger LOGGER = Logger.getLogger(CustomerController.class);
 
 	@Autowired
 	CustomeRepository customerRepository;
@@ -33,18 +34,27 @@ public class CustomerController {
 	private ModelMapper modelMapper;
 
 	@GetMapping("/test")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String test() {
 		LOGGER.info("get all customers");
 		return "REST API test success!";
 	}
 	
 	@GetMapping("/all")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
 	public List<Customer> get() {
 		LOGGER.info("get all customers");
 		return customerRepository.findAll();
 	}
 
+	@GetMapping("/hello")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+	public String hello() {
+		return "hello world api called";
+	}
+	
 	@PostMapping("/create")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
 	public ResponseEntity<CustomerDTO>  create(@Valid @RequestBody CustomerDTO customerDTO) {
 		Customer obj =  customerService.save(customerDTO);
 		CustomerDTO result = this.modelMapper.map(obj, CustomerDTO.class);

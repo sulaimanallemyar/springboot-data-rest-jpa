@@ -3,8 +3,6 @@ package com.info.fmis.controller;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.security.auth.login.AccountNotFoundException;
 import javax.validation.Valid;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
@@ -29,7 +27,7 @@ import com.info.fmis.service.UserService;
 import net.minidev.json.JSONArray;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api")
 public class UserController {
 
 	@Autowired
@@ -58,7 +56,7 @@ public class UserController {
 		return ResponseEntity.ok().body(result);
 	}
 
-	@PostMapping("/addNewUser")
+	@PostMapping("/signup")
 	public ResponseEntity<UserDTO> addNewUser(@Valid @RequestBody UserDTO userInfo) {
 
 		if (userService.isUserAlreadyRegistered(userInfo.getUsername())) {
@@ -82,7 +80,7 @@ public class UserController {
 		return "Welcome to Admin Profile";
 	}
 
-	@PostMapping("/generateToken")
+	@PostMapping("/signin")
 	public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
 		
         Authentication authentication = null;
