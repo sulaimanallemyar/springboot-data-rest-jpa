@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
+
+import com.info.fmis.dto.AdminUserDTO;
 import com.info.fmis.dto.UserDTO;
 import com.info.fmis.model.AuthRequest;
 import com.info.fmis.model.User;
@@ -57,7 +59,7 @@ public class UserController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<UserDTO> addNewUser(@Valid @RequestBody UserDTO userInfo) {
+	public ResponseEntity<UserDTO> addNewUser(@Valid @RequestBody AdminUserDTO userInfo) {
 
 		if (userService.isUserAlreadyRegistered(userInfo.getUsername())) {
 //			throw new user

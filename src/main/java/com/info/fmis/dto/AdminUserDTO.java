@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class UserDTO implements Serializable{
+public class AdminUserDTO implements Serializable{
 
 	/**
 	 * 
@@ -18,6 +18,9 @@ public class UserDTO implements Serializable{
 	private String username;
 	
 	private String email;
+	
+	@NotNull
+	private String password;
 	
 	private String roles;
 }

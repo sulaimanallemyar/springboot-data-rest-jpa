@@ -1,27 +1,18 @@
 package com.info.fmis.service;
 
+import java.util.List;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.info.fmis.dto.UserDTO;
-import com.info.fmis.model.AuthRequest;
+import org.springframework.transaction.annotation.Transactional;
+import com.info.fmis.dto.AdminUserDTO;
 import com.info.fmis.model.User;
 import com.info.fmis.repository.UserRepository;
-
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
-
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -46,7 +37,7 @@ public class UserService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("User not found " + username));
 	}
 
-	public User addUser(UserDTO userInfo) {
+	public User addUser(AdminUserDTO userInfo) {
 
 		User obj = this.modelMapper.map(userInfo, User.class);
 
