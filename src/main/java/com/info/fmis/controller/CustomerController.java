@@ -54,7 +54,6 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/create")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
 	public ResponseEntity<CustomerDTO>  create(@Valid @RequestBody CustomerDTO customerDTO) {
 		Customer obj =  customerService.save(customerDTO);
 		CustomerDTO result = this.modelMapper.map(obj, CustomerDTO.class);
