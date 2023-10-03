@@ -44,11 +44,6 @@ public class UserController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-	@GetMapping("/welcome")
-	public String welcome() {
-		return "Welcome this endpoint is not secure";
-	}
-
 	@GetMapping("/users")
 	public ResponseEntity<List<UserDTO>> getUsers() {
 

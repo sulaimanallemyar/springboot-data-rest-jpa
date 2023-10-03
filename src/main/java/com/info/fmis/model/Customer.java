@@ -19,29 +19,21 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "customer")
-@EntityListeners(AuditingEntityListener.class)
-//@JsonIgnoreProperties(value = {"createdAt", "updatedAt"},  allowGetters = true) This is used to ignore properties in request body
 public class Customer {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	private String firstName;
+	private String name;
 	
 	private String lastName;
+	
+	private String fatherName;
 
-	@Column(nullable = false, updatable = false, name = "created_on")
-	@Temporal(TemporalType.DATE)
-	@CreatedDate
-	private Date createdAt;
-	
-	@Column(nullable = false)
-	@Temporal(TemporalType.DATE)
-	@LastModifiedDate
-	private Date updatedAt;
-	
 	private String username;
 	
 	private String password;
+	
+	private String note;
 }

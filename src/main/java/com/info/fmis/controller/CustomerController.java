@@ -1,15 +1,22 @@
 package com.info.fmis.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +26,7 @@ import com.info.fmis.repository.CustomeRepository;
 import com.info.fmis.service.CustomerService;
 
 @RestController
-@RequestMapping("/api/customer")
+@RequestMapping("/api")
 public class CustomerController {
 
 	private Logger LOGGER = Logger.getLogger(CustomerController.class);
@@ -33,48 +40,37 @@ public class CustomerController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@GetMapping("/test")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-	public String test() {
-		LOGGER.info("get all customers");
-		return "REST API test success!";
+	@GetMapping("/customers")
+	public ResponseEntity<List<CustomerDTO>>  getCustomers(Pageable pageable) {
+		
+		Page<Customer> page = customerService.findAll(pageable);
+		List<CustomerDTO> result = page.stream().map(obj -> modelMapper.map(obj, CustomerDTO.class))
+				.collect(Collectors.toList());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("X-Total-Count", String.valueOf(page.getTotalElements()));
+		return ResponseEntity.ok().headers(headers).body(result);
 	}
 	
-	@GetMapping("/all")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
-	public List<Customer> get() {
-		LOGGER.info("get all customers");
-		return customerRepository.findAll();
-	}
-
-	@GetMapping("/hello")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-	public String hello() {
-		return "hello world api called";
-	}
-	
-	@PostMapping("/create")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+	@PostMapping("/customers")
 	public ResponseEntity<CustomerDTO>  create(@Valid @RequestBody CustomerDTO customerDTO) {
 		Customer obj =  customerService.save(customerDTO);
 		CustomerDTO result = this.modelMapper.map(obj, CustomerDTO.class);
 		return ResponseEntity.ok().body(result);
 	}
 	
-	@PostMapping("/update")
-	public Customer update(@Valid @RequestBody Customer customerUpdate) {
-		Customer customerFind = customerRepository.getReferenceById(customerUpdate.getId());
-		customerFind.setFirstName(customerUpdate.getFirstName());
-		customerFind.setLastName(customerUpdate.getLastName());
-		return customerRepository.save(customerFind);
+	@PutMapping("/customers/{id}")
+	public ResponseEntity<CustomerDTO> update(@Valid @RequestBody CustomerDTO customerUpdate) {
+		Customer obj = customerService.update(customerUpdate);
+		CustomerDTO result = this.modelMapper.map(obj, CustomerDTO.class);
+		return ResponseEntity.ok().body(result);
 	}
 	
-	@PostMapping("/delete/{id}")
+	@DeleteMapping("/customers/{id}")
 	public void delete(@PathVariable(value = "id") Long customerId) {
 		 customerRepository.deleteById(customerId);
 	}
 
-	@GetMapping("/find/{id}")
+	@GetMapping("/customers/{id}")
 	public ResponseEntity<Customer> findById(@PathVariable(value = "id") Long customerId) {
 		Customer customer = customerRepository.getReferenceById(customerId);
 		
