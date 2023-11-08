@@ -8,7 +8,7 @@
 	<artifactId>fmis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>finance management information system</name>
+	<name>sample spring boot data rest jpa project</name>
 	<description>Spring Boot Data REST JPA</description>
 
 	<parent>
